@@ -4,15 +4,10 @@ const context = canvas.getContext("2d");
 // increases size of peices within canvas to make total scale of canvas W 12 H 20
 context.scale(20, 20);
 
-const matrix = [
-    [0, 0, 0],
-    [1, 1, 1],
-    [0, 1, 0]
-];
 
 const player = {
     pos: {x: 5, y: 5},
-    matrix: matrix
+    matrix: createPiece(randomPiece())
 }
 
 function collide(arena, player){
@@ -30,6 +25,33 @@ function collide(arena, player){
 }
 
 
+function colorPiece(value){
+    let color;
+    switch (value) {
+        case 1:
+          color = "green";
+          break;
+        case 2:
+           color = "blue";
+          break;
+        case 3:
+          color = "pink";
+          break;
+        case 4:
+          color = "purple";
+          break;
+        case 5:
+          color = "red";
+          break;
+        case 6:
+          color = "yellow";
+          break;
+        case 7:
+          color = "orange";
+    }
+    return color;
+}
+
 // create matrix to represent complete arena
 function createMatrix(w, h){
     const matrix = [];
@@ -40,6 +62,53 @@ function createMatrix(w, h){
 }
 
 const arena = createMatrix(12, 20);
+
+// matrix for each piece
+function createPiece(type){
+    if (type === "T"){
+        return  [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ];
+    } else if (type === "O"){
+        return  [
+            [2, 2],
+            [2, 2]
+        ];
+    } else if (type === "L"){
+        return  [
+            [0, 3, 0],
+            [0, 3, 0],
+            [0, 3, 3]
+        ];
+    } else if (type === "J"){
+        return  [
+            [0, 4, 0],
+            [0, 4, 0],
+            [4, 4, 0]
+        ];
+    }  else if (type === "I"){
+        return  [
+            [0, 5, 0, 0],
+            [0, 5, 0, 0],
+            [0, 5, 0, 0],
+            [0, 5, 0, 0]
+        ];
+    } else if (type === "S"){
+        return  [
+            [0, 6, 6],
+            [6, 6, 0],
+            [0, 0, 0]
+        ];
+    } else if (type === "Z"){
+        return  [
+            [7, 7, 0],
+            [0, 7, 7],
+            [0, 0, 0]
+        ];
+    }
+}
 
 // black background and then uses drawMatrix to create current piece being dropped in animation
 function draw(){
@@ -54,8 +123,8 @@ function draw(){
 function drawMatrix(matrix, offset){
     matrix.forEach((matrix, y)=>{
         matrix.forEach((value, x)=>{
-            if( value !== 0 ){
-                context.fillStyle = "red";
+            if ( value !== 0 ){
+                context.fillStyle = colorPiece(value);
                 context.fillRect(x + offset.x,
                                  y + offset.y,
                                  1, 1);
@@ -85,7 +154,7 @@ function playerDrop(){
     if (collide(arena, player)){
         player.pos.y--;
         merge(arena, player);
-        player.pos.y = 0;
+        playerReset();
     }
     dropCounter = 0;
 }
@@ -98,6 +167,16 @@ function playerMove(dir){
     }
 }
 
+// creates new pieice after current piece is set
+function playerReset(){
+    player.matrix = createPiece(randomPiece()); 
+    player.pos.y = 0;
+    player.pos.x = (arena[0].length / 2 | 0) -
+                   (player.matrix[0].length / 2 | 0); // |0 is floored
+}
+
+
+// usses collide to detect and correct collisions during rottion
 function playerRotate(dir){
     const pos = player.pos.x;
     let offset = 1;
@@ -113,6 +192,13 @@ function playerRotate(dir){
     }
 }
 
+//returns random key for piece
+function randomPiece(){
+    const pieces = "ILJOTSZ";
+    return pieces[pieces.length * Math.random() | 0];
+}
+
+// rotate pice
 function rotate(matrix, dir){
     for (let y = 0; y < matrix.length; y++){
         for (let x = 0; x < y; x++){
@@ -161,7 +247,8 @@ document.addEventListener("keydown", event=>{
         playerDrop();
     } else if (event.keyCode === 81){
         playerRotate(-1);
-    } else if (event.keyCode === 87){
+    } else if (event.keyCode === 87 ||
+               event.keyCode === 38){
         playerRotate(1);
     }
 })
