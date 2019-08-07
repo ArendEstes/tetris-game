@@ -4,10 +4,28 @@ const context = canvas.getContext("2d");
 // increases size of peices within canvas to make total scale of canvas W 12 H 20
 context.scale(20, 20);
 
+const arena = createMatrix(12, 20);
 
 const player = {
-    pos: {x: 5, y: 5},
-    matrix: createPiece(randomPiece())
+    matrix: createPiece(randomPiece()),
+    pos: {x: arena[0].length /2 - 2 / 2, y: 0},
+    score: 0
+}
+
+function arenaSweep(){
+    let rowCount = 1;
+    outer: for (let y = arena.length -1; y > 0; y--){
+        for (let x = 0; x < arena[y].length; x++){
+            if (arena[y][x] === 0){
+                continue outer;
+            }
+        }
+    const row = arena.splice(y, 1)[0].fill(0);
+    arena.unshift(row);
+    y++;
+    player.score += rowCount * 10;
+    rowCount *= 2;
+    }
 }
 
 function collide(arena, player){
@@ -29,25 +47,25 @@ function colorPiece(value){
     let color;
     switch (value) {
         case 1:
-          color = "green";
+          color = "#390099";
           break;
         case 2:
-           color = "blue";
+           color = "#9E0059";
           break;
         case 3:
-          color = "pink";
+          color = "#FF0054";
           break;
         case 4:
-          color = "purple";
+          color = "#FF5400";
           break;
         case 5:
-          color = "red";
+          color = "#ffff00";
           break;
         case 6:
-          color = "yellow";
+          color = "#1aff1a";
           break;
         case 7:
-          color = "orange";
+          color = "#00e6e6";
     }
     return color;
 }
@@ -61,7 +79,7 @@ function createMatrix(w, h){
     return matrix;
 }
 
-const arena = createMatrix(12, 20);
+
 
 // matrix for each piece
 function createPiece(type){
@@ -155,6 +173,8 @@ function playerDrop(){
         player.pos.y--;
         merge(arena, player);
         playerReset();
+        arenaSweep();
+        updateScore();
     }
     dropCounter = 0;
 }
@@ -173,6 +193,11 @@ function playerReset(){
     player.pos.y = 0;
     player.pos.x = (arena[0].length / 2 | 0) -
                    (player.matrix[0].length / 2 | 0); // |0 is floored
+    if ( collide(arena, player) ){
+        arena.forEach(row=> row.fill(0));
+        player.score = 0;
+        updateScore();
+    }
 }
 
 
@@ -237,6 +262,10 @@ function update(time = 0){
     requestAnimationFrame(update);
 }
 
+function updateScore(){
+    document.getElementById("score").innerText = player.score
+}
+
 // keyboard control
 document.addEventListener("keydown", event=>{
     if (event.keyCode === 37){
@@ -253,4 +282,5 @@ document.addEventListener("keydown", event=>{
     }
 })
 
+updateScore();
 update();
