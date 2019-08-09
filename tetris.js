@@ -12,6 +12,7 @@ const player = {
     score: 0
 }
 
+// clears completed lines
 function arenaSweep(){
     let rowCount = 1;
     outer: for (let y = arena.length -1; y > 0; y--){
@@ -28,6 +29,7 @@ function arenaSweep(){
     }
 }
 
+//detects if current piece overlaps edge or other piece
 function collide(arena, player){
     const [m, o] = [player.matrix, player.pos];
     for (let y = 0; y < m.length; y++){
@@ -42,7 +44,7 @@ function collide(arena, player){
     return false;
 }
 
-
+// color key for pieces
 function colorPiece(value){
     let color;
     switch (value) {
@@ -262,6 +264,7 @@ function update(time = 0){
     requestAnimationFrame(update);
 }
 
+// displays score
 function updateScore(){
     document.getElementById("score").innerText = player.score
 }
