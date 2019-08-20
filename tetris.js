@@ -196,6 +196,11 @@ function playerReset(){
     player.pos.x = (arena[0].length / 2 | 0) -
                    (player.matrix[0].length / 2 | 0); // |0 is floored
     if ( collide(arena, player) ){
+        clearInterval(levelSpeed);
+        levelSpeed = setInterval(() => {
+            dropInterval -= 100;
+        }, 60000);
+        dropInterval = 1000;
         arena.forEach(row=> row.fill(0));
         player.score = 0;
         updateScore();
@@ -249,6 +254,9 @@ function rotate(matrix, dir){
 let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
+let levelSpeed = setInterval(() => {
+    dropInterval -= 100;
+}, 60000);
 
 //animation uses time intervals of one second to drop current piece
 function update(time = 0){
