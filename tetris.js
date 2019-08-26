@@ -5,7 +5,7 @@ const context = canvas.getContext("2d");
 context.scale(20, 20);
 
 const arena = createMatrix(12, 20);
-
+let level= 1;
 const player = {
     matrix: createPiece(randomPiece()),
     pos: {x: arena[0].length /2 - 2 / 2, y: 0},
@@ -27,6 +27,8 @@ function arenaSweep(){
     player.score += rowCount * 10;
     rowCount *= 2;
     }
+    highScoreCheck();
+    updateHighScore();
 }
 
 //detects if current piece overlaps edge or other piece
@@ -153,6 +155,22 @@ function drawMatrix(matrix, offset){
     })
 }
 
+// high score
+let highScore;
+if(localStorage.length === 0){
+    highScore = 0;
+}
+else {
+    highScore = JSON.parse(localStorage.getItem("highScore"));
+}
+
+function highScoreCheck(){
+    if(player.score > highScore){
+        highScore = player.score;
+        localStorage.setItem("highScore", JSON.stringify(highScore));
+    }
+}
+
 // copies players piece into arena
 function merge(arena, player){
     player.matrix.forEach((row, y)=>{
@@ -199,9 +217,14 @@ function playerReset(){
         clearInterval(levelSpeed);
         levelSpeed = setInterval(() => {
             dropInterval -= 100;
+            level++;
+            updateLevel();
         }, 60000);
         dropInterval = 1000;
+        level = 1;
+        updateLevel();
         arena.forEach(row=> row.fill(0));
+
         player.score = 0;
         updateScore();
     }
@@ -256,6 +279,8 @@ let dropInterval = 1000;
 let lastTime = 0;
 let levelSpeed = setInterval(() => {
     dropInterval -= 100;
+    level ++;
+    updateLevel();
 }, 60000);
 
 //animation uses time intervals of one second to drop current piece
@@ -272,9 +297,19 @@ function update(time = 0){
     requestAnimationFrame(update);
 }
 
+// display high score
+function updateHighScore(){
+    document.getElementById("highScore").innerHTML = `high score<br>${highScore}`;
+}
+
+// displays level
+function updateLevel(){
+    document.getElementById("level").innerHTML = `level<br>${level}`;
+}
+
 // displays score
 function updateScore(){
-    document.getElementById("score").innerText = player.score
+    document.getElementById("score").innerHTML = `score<br>${player.score}`;
 }
 
 // keyboard control
@@ -293,5 +328,7 @@ document.addEventListener("keydown", event=>{
     }
 })
 
+updateHighScore();
+updateLevel();
 updateScore();
 update();

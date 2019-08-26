@@ -8,18 +8,34 @@
         body{
             background: #202028;
             color: white;
-            font-family: sans-serif;
-            font-size: 2em;
-            text-align: center
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 1em;
+            text-align: center;
+            text-transform: uppercase;
         }
         canvas{
-            height: 85vh;
+            height: 80vh;
             border: solid;
         }
+        #scoreBoard{
+            display: flex;
+            justify-content: space-between;
+            width: 52vh;
+            margin: auto;
+        }
+        .scoreBoard{
+            width: 30%;
+        }
+
     </style>
 </head>
 <body>
-    <div id="score"></div>
+    <div id="scoreBoard">
+        <div id="level" class="scoreBoard">level</div>
+        <div id="score" class="scoreBoard"></div>
+        <div id="highScore" class="scoreBoard">high score</div>
+    </div>
+    
     <canvas id="tetris" width="240" height="400"></canvas>
     <script src="tetris.js"></script>
 </body>
