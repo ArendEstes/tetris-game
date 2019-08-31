@@ -1,6 +1,11 @@
 const  canvas = document.getElementById("tetris");
 const context = canvas.getContext("2d");
 
+// audio
+const beep = new Audio("./audio/beep.mp3");
+const clear = new Audio("./audio/clear.mp3")
+const lose = new Audio("./audio/lose.mp3")
+
 // increases size of peices within canvas to make total scale of canvas W 12 H 20
 context.scale(20, 20);
 
@@ -26,6 +31,7 @@ function arenaSweep(){
     y++;
     player.score += rowCount * 10;
     rowCount *= 2;
+    clear.play();
     }
     highScoreCheck();
     updateHighScore();
@@ -196,6 +202,7 @@ function playerDrop(){
         arenaSweep();
         updateScore();
     }
+    beep.play();
     dropCounter = 0;
 }
 
@@ -224,7 +231,7 @@ function playerReset(){
         level = 1;
         updateLevel();
         arena.forEach(row=> row.fill(0));
-
+        lose.play();
         player.score = 0;
         updateScore();
     }
